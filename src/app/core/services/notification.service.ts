@@ -15,9 +15,7 @@ export class NotificationService {
     return this.http.get<ClientNotificationItem[]>(this.apiUrl);
   }
 
-  generateMockNotifications(): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/mock`, {});
-  }
+
 
   markAsRead(id: number): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}/read`, {});
