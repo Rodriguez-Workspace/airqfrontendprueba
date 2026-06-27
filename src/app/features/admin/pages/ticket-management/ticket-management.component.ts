@@ -41,46 +41,7 @@ export class TicketManagementComponent implements OnInit {
   loadTickets() {
     this.ticketService.getTickets().subscribe({
       next: (data) => {
-        // Mock data for display if the database is empty just so we can see the Kanban board.
-        // In real usage, the backend will provide these.
-        if (data.length === 0) {
-          this.tickets = [
-            {
-              ticketId: '1',
-              ticketNumber: '#TK-0042',
-              clientName: 'Colegio San Marcos',
-              category: 'Falla de Hardware',
-              priority: 'Alto',
-              issueDescription: 'Sensor de laboratorio no reporta datos',
-              status: 'OPEN',
-              createdAt: new Date().toISOString()
-            },
-            {
-              ticketId: '2',
-              ticketNumber: '#TK-0043',
-              clientName: 'Instituto Delta',
-              category: 'Soporte de Software',
-              priority: 'Medio',
-              issueDescription: 'No pueden acceder al dashboard',
-              status: 'IN_PROGRESS',
-              technicianId: this.technicians.length > 0 ? this.technicians[0].id : undefined,
-              createdAt: new Date().toISOString()
-            },
-            {
-              ticketId: '3',
-              ticketNumber: '#TK-0044',
-              clientName: 'Colegio San Marcos',
-              category: 'Instalación',
-              priority: 'Bajo',
-              issueDescription: 'Instalación de 2 sensores nuevos',
-              status: 'RESOLVED',
-              createdAt: new Date().toISOString(),
-              resolvedAt: new Date().toISOString()
-            }
-          ];
-        } else {
-          this.tickets = data;
-        }
+        this.tickets = data;
         
         this.isLoading = false;
         this.cdr.detectChanges();

@@ -1,0 +1,1 @@
+import{O as e,T as a,cc as i,fc as n}from"./chunk-B4VDB2FB.js";var o=class t{http=a(i);apiUrl=`${n.apiUrl}/admin/users/tech`;getTechnicians(){return this.http.get(this.apiUrl)}createTechnician(r){return this.http.post(this.apiUrl,r)}static \u0275fac=function(p){return new(p||t)};static \u0275prov=e({token:t,factory:t.\u0275fac,providedIn:"root"})};export{o as a};
