@@ -28,6 +28,7 @@ import {
   from '../models/average-metrics.model';
 
 import { SensorStatus } from '../models/sensor-status.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -45,21 +46,32 @@ export class SensorService {
   measurementsMap:
     Record<number, Measurement[]> = {};
 
-  private adminApi =
-    'http://localhost:8080/api/v1/admin/sensors';
-
-  private clientApi =
-    'http://localhost:8080/api/v1/client/sensors';
-
   getSensors(): Observable<Sensor[]> {
-
     return this.http.get<Sensor[]>(
-      this.adminApi
+      `${environment.apiUrl}/admin/sensors`
     );
   }
 
+  getSensorsByClientId(clientId: number): Observable<Sensor[]> {
+    return this.http.get<Sensor[]>(`${environment.apiUrl}/admin/sensors/clients/${clientId}`);
+  }
+
+  getMySensors(): Observable<Sensor[]> {
+    return this.http.get<Sensor[]>(`${environment.apiUrl}/client/sensors`);
+  }
+
+  assignSensor(clientId: number, serialNumber: string, location: string, campus: string): Observable<Sensor> {
+    const payload = {
+      clientId,
+      macAddress: serialNumber,
+      location,
+      campus
+    };
+    return this.http.post<Sensor>(`${environment.apiUrl}/tech/sensors/assign`, payload);
+  }
+
   getSensorById(id: number): Observable<Sensor> {
-    return this.http.get<Sensor>(`${this.adminApi}/${id}`);
+    return this.http.get<Sensor>(`${environment.apiUrl}/admin/sensors/${id}`);
   }
 
   createSensor(
@@ -67,7 +79,7 @@ export class SensorService {
   ): Observable<Sensor> {
 
     return this.http.post<Sensor>(
-      this.adminApi,
+      `${environment.apiUrl}/admin/sensors`,
       sensor
     );
   }
@@ -78,7 +90,7 @@ export class SensorService {
   ): Observable<Sensor> {
 
     return this.http.put<Sensor>(
-      `${this.adminApi}/${id}`,
+      `${environment.apiUrl}/admin/sensors/${id}`,
       sensor
     );
 
@@ -89,24 +101,24 @@ export class SensorService {
   ): Observable<void> {
 
     return this.http.delete<void>(
-      `${this.adminApi}/${id}`
+      `${environment.apiUrl}/admin/sensors/${id}`
     );
 
   }
 
   getClientSensors(): Observable<Sensor[]> {
-    return this.http.get<Sensor[]>(this.clientApi);
+    return this.http.get<Sensor[]>(`${environment.apiUrl}/client/sensors`);
   }
 
   getAverageMetrics(): Observable<AverageMetrics> {
-    return this.http.get<AverageMetrics>(`${this.clientApi}/metrics/average`);
+    return this.http.get<AverageMetrics>(`${environment.apiUrl}/client/sensors/metrics/average`);
   }
 
   getHistoricalMetrics(): Observable<import('../models/hourly-metric.model').HourlyMetric[]> {
-    return this.http.get<import('../models/hourly-metric.model').HourlyMetric[]>(`${this.clientApi}/metrics/historical`);
+    return this.http.get<import('../models/hourly-metric.model').HourlyMetric[]>(`${environment.apiUrl}/client/sensors/metrics/historical`);
   }
 
   getClientSensorStatus(): Observable<SensorStatus[]> {
-    return this.http.get<SensorStatus[]>(`${this.clientApi}/status`);
+    return this.http.get<SensorStatus[]>(`${environment.apiUrl}/client/sensors/status`);
   }
 }

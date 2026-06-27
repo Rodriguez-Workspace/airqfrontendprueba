@@ -39,6 +39,11 @@ export class RegisterComponent {
       Validators.required
     ],
 
+    companyName: [
+      '',
+      Validators.required
+    ],
+
     email: [
       '',
       [
@@ -80,7 +85,8 @@ export class RegisterComponent {
     this.auth.register({
       username: this.form.value.fullName ?? '',
       email: this.form.value.email ?? '',
-      password: password ?? ''
+      password: password ?? '',
+      companyName: this.form.value.companyName ?? ''
     }).subscribe({
       next: () => {
         this.router.navigate(['/login']);

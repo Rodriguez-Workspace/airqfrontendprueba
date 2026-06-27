@@ -10,6 +10,8 @@ import { Observable }
 import { Measurement }
   from '../models/measurement.model';
 
+import { environment } from '../../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,13 +20,9 @@ export class MeasurementService {
   private http =
     inject(HttpClient);
 
-  private api =
-    'http://localhost:8080/api/v1/measurements';
-
   getMeasurements(): Observable<Measurement[]> {
-
     return this.http.get<Measurement[]>(
-      this.api
+      `${environment.apiUrl}/measurements`
     );
   }
 
@@ -33,7 +31,7 @@ export class MeasurementService {
   ): Observable<Measurement[]> {
 
     return this.http.get<Measurement[]>(
-      `${this.api}/sensor/${sensorId}`
+      `${environment.apiUrl}/measurements/sensor/${sensorId}`
     );
   }
 
@@ -48,7 +46,7 @@ export class MeasurementService {
   ): Observable<Measurement> {
 
     return this.http.post<Measurement>(
-      this.api,
+      `${environment.apiUrl}/measurements`,
       measurement
     );
   }
