@@ -91,4 +91,31 @@ export class TechManagementComponent implements OnInit {
       }
     });
   }
+
+  deleteTechnician(id: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará al técnico permanentemente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isLoading = true;
+        this.techService.deleteTechnician(id).subscribe({
+          next: () => {
+            this.loadTechnicians();
+            Swal.fire('Eliminado', 'El técnico ha sido eliminado.', 'success');
+          },
+          error: () => {
+            this.isLoading = false;
+            Swal.fire('Error', 'No se pudo eliminar al técnico.', 'error');
+          }
+        });
+      }
+    });
+  }
 }

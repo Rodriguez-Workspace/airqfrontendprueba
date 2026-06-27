@@ -17,4 +17,8 @@ export class TechService {
   createTechnician(techData: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, techData);
   }
+
+  deleteTechnician(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
 }
