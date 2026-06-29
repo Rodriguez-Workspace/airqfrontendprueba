@@ -8,4 +8,6 @@ export interface Sensor {
 
     active: boolean;
 
+    campus?: string;
+
 }
