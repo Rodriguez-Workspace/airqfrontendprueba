@@ -23,8 +23,6 @@ export class ClassroomsComponent implements OnInit, OnDestroy {
   offlineCount = 0;
 
   isReportingFault = false;
-  selectedSensorForAnalytics: SensorStatus | null = null;
-  isAnalyticsModalOpen = false;
 
   private pollingSubscription?: Subscription;
 
@@ -97,15 +95,7 @@ export class ClassroomsComponent implements OnInit, OnDestroy {
     }
   }
 
-  openAnalytics(sensor: SensorStatus): void {
-    this.selectedSensorForAnalytics = sensor;
-    this.isAnalyticsModalOpen = true;
-  }
 
-  closeAnalytics(): void {
-    this.isAnalyticsModalOpen = false;
-    this.selectedSensorForAnalytics = null;
-  }
 
   ngOnDestroy(): void {
     if (this.pollingSubscription) {

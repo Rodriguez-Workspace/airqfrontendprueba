@@ -259,7 +259,9 @@ export class ClientDirectoryComponent implements OnInit {
     this.http.get<AdminClientResponse[]>(`${environment.apiUrl}/admin/clients`).subscribe({
       next: (data) => {
         // El backend devuelve directamente un array con todos los campos calculados
-        this.clients = Array.isArray(data) ? data : [];
+        const allClients = Array.isArray(data) ? data : [];
+        // Filtrar clientes pendientes de verificación para que solo aparezcan en Onboarding
+        this.clients = allClients.filter(c => c.status === 'ACTIVE' || c.status === 'SUSPENDED');
         this.isLoading = false;
         this.cdr.detectChanges();
       },

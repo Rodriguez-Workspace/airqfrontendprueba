@@ -110,12 +110,18 @@ export class SensorService {
     return this.http.get<Sensor[]>(`${environment.apiUrl}/client/sensors`);
   }
 
-  getAverageMetrics(): Observable<AverageMetrics> {
-    return this.http.get<AverageMetrics>(`${environment.apiUrl}/client/sensors/metrics/average`);
+  getAverageMetrics(campus?: string): Observable<AverageMetrics> {
+    const params = campus ? `?campus=${encodeURIComponent(campus)}` : '';
+    return this.http.get<AverageMetrics>(`${environment.apiUrl}/client/sensors/metrics/average${params}`);
   }
 
-  getHistoricalMetrics(): Observable<import('../models/hourly-metric.model').HourlyMetric[]> {
-    return this.http.get<import('../models/hourly-metric.model').HourlyMetric[]>(`${environment.apiUrl}/client/sensors/metrics/historical`);
+  getHistoricalMetrics(campus?: string): Observable<import('../models/hourly-metric.model').HourlyMetric[]> {
+    const offset = new Date().getTimezoneOffset();
+    let url = `${environment.apiUrl}/client/sensors/metrics/historical?offset=${offset}`;
+    if (campus) {
+      url += `&campus=${encodeURIComponent(campus)}`;
+    }
+    return this.http.get<import('../models/hourly-metric.model').HourlyMetric[]>(url);
   }
 
   getClientSensorStatus(): Observable<SensorStatus[]> {

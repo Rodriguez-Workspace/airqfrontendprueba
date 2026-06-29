@@ -25,6 +25,10 @@ Chart.register(...registerables);
 export class DashboardComponent implements OnInit, OnDestroy {
   activeView = 'dashboard';
   averageMetrics: AverageMetrics | null = null;
+  campuses: string[] = [];
+  selectedCampus: string = '';
+  hasNoSensors = false;
+  
   private pollingSubscription?: Subscription;
   private historicalSubscription?: Subscription;
 
@@ -81,24 +85,57 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const path = this.router.url.split('/').filter(Boolean)[0] || 'dashboard';
     this.activeView = path;
     
-    // Iniciar polling cada 5 segundos (5000 ms)
+    this.sensorService.getClientSensors().subscribe({
+      next: (sensors) => {
+        if (sensors.length === 0) {
+          this.hasNoSensors = true;
+          this.cdr.detectChanges();
+          return;
+        }
+        
+        const campusSet = new Set<string>();
+        sensors.forEach(s => {
+          if (s.campus) {
+            campusSet.add(s.campus);
+          }
+        });
+        this.campuses = Array.from(campusSet);
+        
+        this.startPolling();
+        this.loadHistoricalData();
+      },
+      error: (err) => console.error('Error fetching sensors', err)
+    });
+  }
+
+  startPolling(): void {
     this.pollingSubscription = timer(0, 5000).pipe(
-      switchMap(() => this.sensorService.getAverageMetrics())
+      switchMap(() => this.sensorService.getAverageMetrics(this.selectedCampus || undefined))
     ).subscribe({
       next: (metrics: AverageMetrics) => {
         this.averageMetrics = metrics;
-        this.cdr.detectChanges(); // Forzar repintado UI
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
         console.error('Error al obtener métricas en tiempo real', err);
       }
     });
+  }
 
+  onCampusChange(event: any): void {
+    this.selectedCampus = event.target.value;
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
+    this.startPolling();
     this.loadHistoricalData();
   }
 
   loadHistoricalData(): void {
-    this.historicalSubscription = this.sensorService.getHistoricalMetrics().subscribe({
+    if (this.historicalSubscription) {
+      this.historicalSubscription.unsubscribe();
+    }
+    this.historicalSubscription = this.sensorService.getHistoricalMetrics(this.selectedCampus || undefined).subscribe({
       next: (historicalData: HourlyMetric[]) => {
         const labels = historicalData.map(d => d.hour);
         const dataTemp = historicalData.map(d => d.averageTemperature);

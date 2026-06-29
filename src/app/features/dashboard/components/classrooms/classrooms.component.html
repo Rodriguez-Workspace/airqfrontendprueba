@@ -49,7 +49,7 @@
         </div>
 
         <div class="sensor-actions">
-          <button class="btn-secondary" (click)="openAnalytics(sensor)">Ver Analíticas</button>
+
           <button class="btn-danger" *ngIf="!sensor.isOnline" (click)="reportFault(sensor)" [disabled]="isReportingFault">
             Reportar Falla
           </button>
@@ -63,21 +63,6 @@
     <p>No tienes sensores vinculados a ninguna sede o aula.</p>
   </div>
 
-  <!-- Modal Analíticas (Visual) -->
-  <div class="modal-overlay" *ngIf="isAnalyticsModalOpen">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Analíticas: {{ selectedSensorForAnalytics?.location }}</h3>
-        <button class="close-btn" (click)="closeAnalytics()">×</button>
-      </div>
-      <div class="modal-body">
-        <p>Sensor ID: {{ selectedSensorForAnalytics?.serialNumber }}</p>
-        <div class="placeholder-chart">
-          <!-- Gráfico visual preparado para el futuro -->
-          <p>Gráficos detallados de histórico de calidad del aire próximamente...</p>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
 </section>
