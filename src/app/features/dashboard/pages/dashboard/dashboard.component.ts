@@ -38,6 +38,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   };
 
+  public co2ChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: { line: { tension: 0.4 } },
+    scales: { y: { suggestedMin: 400, suggestedMax: 1200 } }
+  };
+
+  public pm25ChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: { line: { tension: 0.4 } },
+    scales: { y: { suggestedMin: 0, suggestedMax: 100 } }
+  };
+
+  public tempChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: { line: { tension: 0.4 } },
+    scales: { y: { suggestedMin: 10, suggestedMax: 40 } }
+  };
+
+  public humChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    elements: { line: { tension: 0.4 } },
+    scales: { y: { suggestedMin: 20, suggestedMax: 100 } }
+  };
+
   public chartDataTemp: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
   public chartDataHum: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
   public chartDataCo2: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };

@@ -169,42 +169,42 @@
           <p>Última lectura</p>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia PM2.5</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Partículas PM2.5</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataPm25"
-                  [options]="lineChartOptions"
+                  [options]="pm25ChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia CO2</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Dióxido de Carbono (CO2)</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataCo2"
-                  [options]="lineChartOptions"
+                  [options]="co2ChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia Temperatura</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Temperatura</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataTemp"
-                  [options]="lineChartOptions"
+                  [options]="tempChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia Humedad</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Humedad Relativa</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataHum"
-                  [options]="lineChartOptions"
+                  [options]="humChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
