@@ -149,9 +149,8 @@
       <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1 class="page-title" style="margin-bottom: 0;">Dashboard</h1>
         <div class="campus-selector" *ngIf="campuses.length > 0">
-          <label for="campusSelect" style="margin-right: 10px; font-weight: bold;">Sede: </label>
-          <select id="campusSelect" (change)="onCampusChange($event)" [value]="selectedCampus" style="padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-            <option value="">Todas las sedes</option>
+          <label for="campusSelect" style="margin-right: 10px; font-weight: bold; color: #207193;">Sede: </label>
+          <select id="campusSelect" (change)="onCampusChange($event)" [value]="selectedCampus" class="form-select form-select-sm d-inline-block w-auto shadow-sm border-0" style="background-color: #f8f9fa;">
             <option *ngFor="let campus of campuses" [value]="campus">{{ campus }}</option>
           </select>
         </div>

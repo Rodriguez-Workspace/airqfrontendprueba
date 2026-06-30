@@ -59,7 +59,7 @@ interface AdminClientResponse {
                 </tr>
 
                 <tr *ngFor="let client of clients">
-                  <td class="ps-4 fw-medium text-dark">{{ client.contactName }}</td>
+                  <td class="ps-4 fw-medium text-dark">{{ client.institutionName }}</td>
                   <td>
                     <div class="d-flex flex-column">
                       <span class="text-dark">{{ client.contactEmail }}</span>

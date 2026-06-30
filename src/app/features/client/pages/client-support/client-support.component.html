@@ -33,6 +33,24 @@
                 </select>
               </div>
 
+              <!-- Sede (Opcional) -->
+              <div class="col-md-6" *ngIf="campuses.length > 0">
+                <label class="form-label fw-bold" style="color: #495057;">Sede Afectada</label>
+                <select class="form-select form-select-lg" [(ngModel)]="ticketData.campus" name="campus" (change)="onCampusChange()">
+                  <option value="" selected>General (Toda la empresa)</option>
+                  <option *ngFor="let c of campuses" [value]="c">{{ c }}</option>
+                </select>
+              </div>
+
+              <!-- Aula/Oficina (Opcional) -->
+              <div class="col-md-6" *ngIf="ticketData.campus && classrooms.length > 0">
+                <label class="form-label fw-bold" style="color: #495057;">Aula / Oficina</label>
+                <select class="form-select form-select-lg" [(ngModel)]="ticketData.classroom" name="classroom">
+                  <option value="" selected>Toda la Sede</option>
+                  <option *ngFor="let loc of classrooms" [value]="loc">{{ loc }}</option>
+                </select>
+              </div>
+
               <!-- Descripción -->
               <div class="col-12">
                 <label class="form-label fw-bold" style="color: #495057;">Descripción Detallada *</label>

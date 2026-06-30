@@ -2,6 +2,8 @@ import { Component, inject, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TicketService } from '../../../../core/services/ticket.service';
+import { SensorService } from '../../../../core/services/sensor';
+import { Sensor } from '../../../../core/models/sensor.model';
 
 @Component({
   selector: 'app-client-support',
@@ -12,11 +14,14 @@ import { TicketService } from '../../../../core/services/ticket.service';
 })
 export class ClientSupportComponent implements OnInit {
   private ticketService = inject(TicketService);
+  private sensorService = inject(SensorService);
   private cdr = inject(ChangeDetectorRef);
 
   ticketData = {
     category: '',
-    issueDescription: ''
+    issueDescription: '',
+    campus: '',
+    classroom: ''
   };
 
   isSubmitting = false;
@@ -25,8 +30,40 @@ export class ClientSupportComponent implements OnInit {
   recentTickets: any[] = [];
   isLoadingTickets = false;
 
+  allSensors: Sensor[] = [];
+  campuses: string[] = [];
+  classrooms: string[] = [];
+
   ngOnInit() {
     this.loadRecentTickets();
+    this.loadSensors();
+  }
+
+  loadSensors() {
+    this.sensorService.getClientSensors().subscribe({
+      next: (sensors) => {
+        this.allSensors = sensors;
+        const campusSet = new Set<string>();
+        sensors.forEach(s => {
+          if (s.campus) {
+            campusSet.add(s.campus);
+          }
+        });
+        this.campuses = Array.from(campusSet);
+      },
+      error: (err) => console.error('Error fetching sensors for support', err)
+    });
+  }
+
+  onCampusChange() {
+    this.ticketData.classroom = '';
+    const classroomSet = new Set<string>();
+    this.allSensors.forEach(s => {
+      if (s.campus === this.ticketData.campus && s.location) {
+        classroomSet.add(s.location);
+      }
+    });
+    this.classrooms = Array.from(classroomSet);
   }
 
   loadRecentTickets() {
@@ -62,7 +99,9 @@ export class ClientSupportComponent implements OnInit {
         // Limpiar el formulario
         this.ticketData = {
           category: '',
-          issueDescription: ''
+          issueDescription: '',
+          campus: '',
+          classroom: ''
         };
         this.loadRecentTickets(); // Actualizar la lista
         this.cdr.detectChanges();

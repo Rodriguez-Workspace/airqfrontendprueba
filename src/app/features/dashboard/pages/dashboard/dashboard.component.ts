@@ -101,6 +101,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
         this.campuses = Array.from(campusSet);
         
+        if (this.campuses.length > 0) {
+          this.selectedCampus = this.campuses[0];
+        }
+        
         this.startPolling();
         this.loadHistoricalData();
       },
