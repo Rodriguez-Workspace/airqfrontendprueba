@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { ToastService } from '../../../../core/services/toast.service';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -191,6 +192,7 @@ export class ClientOnboardingComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
 
   clients: ClientOnboardingItem[] = [];
   selectedClient: ClientOnboardingItem | null = null;
@@ -344,13 +346,13 @@ export class ClientOnboardingComponent implements OnInit, OnDestroy {
 
     this.http.put(`${environment.apiUrl}/admin/clients/${this.selectedClient.id}/activate`, payload).subscribe({
       next: () => {
-        alert('Cuenta aprobada correctamente');
+        this.toastService.showSuccess('Cuenta aprobada correctamente');
         this.closeModal();
         this.loadClients();
       },
       error: (err) => {
         console.error('Error al aprobar la cuenta', err);
-        alert(`No se pudo aprobar la cuenta. Error: ${err.message}`);
+        this.toastService.showError(`No se pudo aprobar la cuenta. Error: ${err.message}`);
         this.isApproving = false;
       }
     });

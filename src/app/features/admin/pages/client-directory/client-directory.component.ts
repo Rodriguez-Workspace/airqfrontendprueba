@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { environment } from '../../../../../environments/environment';
+import { ToastService } from '../../../../core/services/toast.service';
 
 /** Forma exacta que devuelve GET /api/v1/admin/clients */
 interface AdminClientResponse {
@@ -210,6 +211,7 @@ export class ClientDirectoryComponent implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
+  private toastService = inject(ToastService);
 
   clients: AdminClientResponse[] = [];
   isLoading = true;
@@ -296,7 +298,7 @@ export class ClientDirectoryComponent implements OnInit {
         // Suspender: PUT /suspend sin body
         this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/suspend`, {}).subscribe({
           next: () => { client.status = 'SUSPENDED'; this.cdr.detectChanges(); },
-          error: () => alert(`Error al intentar suspender al cliente.`)
+          error: () => this.toastService.showError(`Error al intentar suspender al cliente.`)
         });
       } else {
         // Reactivar: PUT /activate requiere plan y sensores
@@ -308,7 +310,7 @@ export class ClientDirectoryComponent implements OnInit {
         };
         this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/activate`, payload).subscribe({
           next: () => { client.status = 'ACTIVE'; this.cdr.detectChanges(); },
-          error: () => alert(`Error al intentar reactivar al cliente.`)
+          error: () => this.toastService.showError(`Error al intentar reactivar al cliente.`)
         });
       }
     }
@@ -367,13 +369,13 @@ export class ClientDirectoryComponent implements OnInit {
 
     this.http.put(`${environment.apiUrl}/admin/clients/${this.selectedClient.id}/activate`, payload).subscribe({
       next: () => {
-        alert('Plan de facturación actualizado exitosamente.');
+        this.toastService.showSuccess('Plan de facturación actualizado exitosamente.');
         this.closeModal();
         this.loadClients(); // Recargamos para reflejar los nuevos valores de la DB
       },
       error: (err) => {
         console.error('Error al actualizar el plan:', err);
-        alert('Ocurrió un error al actualizar el plan. Revisa la consola para más detalles.');
+        this.toastService.showError('Ocurrió un error al actualizar el plan. Revisa la consola para más detalles.');
         this.isUpdating = false;
       }
     });

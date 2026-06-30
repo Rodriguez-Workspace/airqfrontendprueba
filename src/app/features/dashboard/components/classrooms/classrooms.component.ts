@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SensorService } from '../../../../core/services/sensor';
 import { TicketService } from '../../../../core/services/ticket.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { SensorStatus } from '../../../../core/models/sensor-status.model';
 import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -25,6 +26,7 @@ export class ClassroomsComponent implements OnInit, OnDestroy {
   isReportingFault = false;
 
   private pollingSubscription?: Subscription;
+  private toastService = inject(ToastService);
 
   constructor(
     private sensorService: SensorService,
@@ -84,11 +86,11 @@ export class ClassroomsComponent implements OnInit, OnDestroy {
       }).subscribe({
         next: () => {
           this.isReportingFault = false;
-          alert('Falla reportada exitosamente. Se ha creado un ticket de soporte.');
+          this.toastService.showSuccess('Falla reportada exitosamente. Se ha creado un ticket de soporte.');
         },
         error: (err) => {
           this.isReportingFault = false;
-          alert('Hubo un error al crear el ticket. Intente de nuevo.');
+          this.toastService.showError('Hubo un error al crear el ticket. Intente de nuevo.');
           console.error(err);
         }
       });

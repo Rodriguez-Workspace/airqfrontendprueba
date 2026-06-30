@@ -20,7 +20,7 @@
               <th>Nombre Completo</th>
               <th>Correo Corporativo</th>
               <th>Zona Asignada</th>
-              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -29,7 +29,9 @@
               <td>{{ tech.email || '-' }}</td>
               <td>{{ tech.zone || '-' }}</td>
               <td>
-                <span class="badge bg-success">Activo</span>
+                <button class="btn btn-outline-danger btn-sm" (click)="deleteTechnician(tech.id)">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
               </td>
             </tr>
           </tbody>

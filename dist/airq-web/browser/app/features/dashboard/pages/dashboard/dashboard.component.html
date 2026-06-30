@@ -146,8 +146,24 @@
   }
   @default {
     <section>
-      <h1 class="page-title">Dashboard</h1>
-      <div class="card-grid">
+      <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 class="page-title" style="margin-bottom: 0;">Dashboard</h1>
+        <div class="campus-selector" *ngIf="campuses.length > 0">
+          <label for="campusSelect" style="margin-right: 10px; font-weight: bold; color: #207193;">Sede: </label>
+          <select id="campusSelect" (change)="onCampusChange($event)" [value]="selectedCampus" class="form-select form-select-sm d-inline-block w-auto shadow-sm border-0" style="background-color: #f8f9fa;">
+            <option *ngFor="let campus of campuses" [value]="campus">{{ campus }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="hasNoSensors" style="text-align: center; padding: 50px 20px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h2 style="color: #1e293b; margin-bottom: 15px;">Bienvenido a tu Panel de Control</h2>
+        <p style="color: #64748b; font-size: 16px;">No tienes sedes ni sensores vinculados a tu cuenta actualmente.</p>
+        <p style="color: #64748b; font-size: 16px;">Por favor, comunícate con soporte técnico para que vinculen tus sensores.</p>
+      </div>
+
+      <div *ngIf="!hasNoSensors">
+        <div class="card-grid">
         <div class="metric-card">
           <h4>CO2</h4>
           <div class="metric-value">{{ (averageMetrics?.averageCo2 | number:'1.0-0') || 'N/A' }} ppm</div>
@@ -169,46 +185,47 @@
           <p>Última lectura</p>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia PM2.5</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Partículas PM2.5</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataPm25"
-                  [options]="lineChartOptions"
+                  [options]="pm25ChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia CO2</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Dióxido de Carbono (CO2)</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataCo2"
-                  [options]="lineChartOptions"
+                  [options]="co2ChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia Temperatura</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Temperatura</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataTemp"
-                  [options]="lineChartOptions"
+                  [options]="tempChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
-      <div class="card">
-        <h3>Tendencia Humedad</h3>
+      <div class="metrics-card">
+        <h3 class="card-title">Humedad Relativa</h3>
         <div style="height: 300px; width: 100%;">
           <canvas baseChart
                   [data]="chartDataHum"
-                  [options]="lineChartOptions"
+                  [options]="humChartOptions"
                   [type]="'line'">
           </canvas>
         </div>
       </div>
+      </div> <!-- Closes *ngIf="!hasNoSensors" -->
     </section>
   }
 }
