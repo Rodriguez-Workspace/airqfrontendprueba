@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -12,7 +13,7 @@ import { TechService } from '../../../../core/services/tech.service';
   templateUrl: './tech-management.component.html',
   styleUrls: ['./tech-management.component.css']
 })
-export class TechManagementComponent implements OnInit {
+export class TechManagementComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private techService = inject(TechService);
   private cdr = inject(ChangeDetectorRef);
@@ -20,6 +21,7 @@ export class TechManagementComponent implements OnInit {
   technicians: any[] = [];
   isLoading = false;
   showModal = false;
+  private refreshSubscription?: Subscription;
 
   techForm: FormGroup = this.fb.group({
     fullName: ['', Validators.required],
@@ -30,10 +32,19 @@ export class TechManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTechnicians();
+    this.refreshSubscription = interval(15000).subscribe(() => {
+      this.loadTechnicians(true);
+    });
   }
 
-  loadTechnicians(): void {
-    this.isLoading = true;
+  ngOnDestroy(): void {
+    this.refreshSubscription?.unsubscribe();
+  }
+
+  loadTechnicians(silent = false): void {
+    if (!silent) {
+      this.isLoading = true;
+    }
     this.techService.getTechnicians().subscribe({
       next: (data) => {
         this.technicians = data;

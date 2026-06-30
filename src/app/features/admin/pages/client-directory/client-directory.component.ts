@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -208,11 +209,12 @@ interface AdminClientResponse {
     }
   `]
 })
-export class ClientDirectoryComponent implements OnInit {
+export class ClientDirectoryComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private fb = inject(FormBuilder);
   private toastService = inject(ToastService);
+  private refreshSubscription?: Subscription;
 
   clients: AdminClientResponse[] = [];
   isLoading = true;
@@ -255,10 +257,19 @@ export class ClientDirectoryComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
+    this.refreshSubscription = interval(15000).subscribe(() => {
+      this.loadClients(true);
+    });
   }
 
-  loadClients(): void {
-    this.isLoading = true;
+  ngOnDestroy(): void {
+    this.refreshSubscription?.unsubscribe();
+  }
+
+  loadClients(silent = false): void {
+    if (!silent) {
+      this.isLoading = true;
+    }
     this.http.get<AdminClientResponse[]>(`${environment.apiUrl}/admin/clients`).subscribe({
       next: (data) => {
         // El backend devuelve directamente un array con todos los campos calculados

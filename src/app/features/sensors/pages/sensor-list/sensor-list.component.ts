@@ -121,13 +121,10 @@ export class SensorListComponent
     this.loadSensors();
 
     this.refreshSubscription =
-      interval(15000)
+      interval(10000)
         .subscribe(() => {
-
-          this.loadSensors();
-
+          this.loadSensors(true);
         });
-
   }
 
   openDeleteModal(
@@ -190,9 +187,10 @@ export class SensorListComponent
 
   }
 
-  loadSensors(): void {
-
-    this.loading = true;
+  loadSensors(silent = false): void {
+    if (!silent) {
+      this.loading = true;
+    }
 
     this.sensorService
       .getSensors()

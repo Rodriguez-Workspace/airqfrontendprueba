@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { interval, Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TicketService, Ticket } from '../../../../core/services/ticket.service';
@@ -11,7 +12,7 @@ import { TechService } from '../../../../core/services/tech.service';
   templateUrl: './ticket-management.component.html',
   styleUrls: ['./ticket-management.component.css']
 })
-export class TicketManagementComponent implements OnInit {
+export class TicketManagementComponent implements OnInit, OnDestroy {
   private ticketService = inject(TicketService);
   private techService = inject(TechService);
   private cdr = inject(ChangeDetectorRef);
@@ -19,13 +20,23 @@ export class TicketManagementComponent implements OnInit {
   tickets: Ticket[] = [];
   technicians: any[] = [];
   isLoading = true;
+  private refreshSubscription?: Subscription;
 
   ngOnInit() {
     this.loadData();
+    this.refreshSubscription = interval(10000).subscribe(() => {
+      this.loadData(true);
+    });
   }
 
-  loadData() {
-    this.isLoading = true;
+  ngOnDestroy(): void {
+    this.refreshSubscription?.unsubscribe();
+  }
+
+  loadData(silent = false) {
+    if (!silent) {
+      this.isLoading = true;
+    }
     this.techService.getTechnicians().subscribe({
       next: (techs) => {
         this.technicians = techs;
