@@ -164,7 +164,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.historicalSubscription) {
       this.historicalSubscription.unsubscribe();
     }
-    this.historicalSubscription = this.sensorService.getHistoricalMetrics(this.selectedCampus || undefined).subscribe({
+    this.historicalSubscription = timer(0, 60000).pipe(
+      switchMap(() => this.sensorService.getHistoricalMetrics(this.selectedCampus || undefined))
+    ).subscribe({
       next: (historicalData: HourlyMetric[]) => {
         const labels = historicalData.map(d => d.hour);
         const dataTemp = historicalData.map(d => d.averageTemperature);
