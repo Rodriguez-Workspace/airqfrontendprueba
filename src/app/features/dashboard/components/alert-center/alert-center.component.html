@@ -57,9 +57,17 @@
           </span>
 
           <!-- Button for Hardware Failure -->
-          <button *ngIf="alert.type === 'HARDWARE_FAILURE'" class="btn-danger" (click)="requestTechSupport(alert)">
-            Solicitar Técnico
-          </button>
+          <ng-container *ngIf="alert.type === 'HARDWARE_FAILURE'">
+            <button *ngIf="!submittedTickets[alert.id]" class="btn-danger" (click)="requestTechSupport(alert)">
+              Solicitar Técnico
+            </button>
+            <button *ngIf="submittedTickets[alert.id] === 'submitting'" class="btn-danger" disabled>
+              Enviando...
+            </button>
+            <button *ngIf="submittedTickets[alert.id] === 'sent'" class="btn-primary" style="background-color: #28a745; cursor: default;" disabled>
+              ✓ Solicitud Enviada
+            </button>
+          </ng-container>
         </div>
       </div>
     </ng-container>

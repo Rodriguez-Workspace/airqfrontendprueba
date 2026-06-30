@@ -70,7 +70,7 @@ interface AdminClientResponse {
                 </tr>
 
                 <tr *ngFor="let client of clients">
-                  <td class="ps-4 fw-medium text-dark">{{ client.contactName || 'Sin asignar' }}</td>
+                  <td class="ps-4 fw-medium text-dark">{{ client.institutionName || 'Sin asignar' }}</td>
                   <td>
                     <span class="badge" [ngClass]="client.subscriptionPlan.includes('Pro') ? 'bg-primary' : 'bg-info text-dark'">
                       {{ client.subscriptionPlan }}

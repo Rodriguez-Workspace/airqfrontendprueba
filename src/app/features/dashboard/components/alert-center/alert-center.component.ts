@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ClientNotificationItem } from '../../../../core/models/notification.model';
+import { TicketService } from '../../../../core/services/ticket.service';
 
 @Component({
   selector: 'app-alert-center',
@@ -13,6 +14,7 @@ import { ClientNotificationItem } from '../../../../core/models/notification.mod
 })
 export class AlertCenterComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
+  private ticketService = inject(TicketService);
   private router = inject(Router);
 
   notifications: ClientNotificationItem[] = [];
@@ -21,6 +23,9 @@ export class AlertCenterComponent implements OnInit, OnDestroy {
   activeFilter: 'ALL' | 'AI_ACTION' | 'HARDWARE_FAILURE' | 'UNREAD' = 'ALL';
   isLoading = true;
   private pollingInterval: any;
+  
+  // Track ticket submission state per notification
+  submittedTickets: { [id: number]: 'submitting' | 'sent' } = {};
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -55,8 +60,6 @@ export class AlertCenterComponent implements OnInit, OnDestroy {
     });
   }
 
-
-
   applyFilter(filter: 'ALL' | 'AI_ACTION' | 'HARDWARE_FAILURE' | 'UNREAD'): void {
     this.activeFilter = filter;
     
@@ -79,12 +82,10 @@ export class AlertCenterComponent implements OnInit, OnDestroy {
   markAsRead(id: number): void {
     this.notificationService.markAsRead(id).subscribe({
       next: () => {
-        // Update local state
         const notification = this.notifications.find(n => n.id === id);
         if (notification) {
           notification.isRead = true;
         }
-        // Reapply current filter
         this.applyFilter(this.activeFilter);
       },
       error: console.error
@@ -92,19 +93,26 @@ export class AlertCenterComponent implements OnInit, OnDestroy {
   }
 
   requestTechSupport(notification: ClientNotificationItem): void {
-    // We could pass query params to the support form if needed
-    // this.router.navigate(['/support'], { queryParams: { location: notification.location } });
+    if (this.submittedTickets[notification.id]) return; // Avoid double clicking
     
-    // As requested, this links to support. 
-    // Wait, the client dashboard handles tabs using 'activeView'.
-    // We need to emit an event or route if we are using Angular router.
-    // In DashboardComponent, views are changed via activeView variable.
-    // I will dispatch a custom event or we can just tell the parent to change view.
+    this.submittedTickets[notification.id] = 'submitting';
     
-    // For now, let's just trigger a global custom event since we are inside a child component.
-    const event = new CustomEvent('navigate-to-support', { 
-      detail: { location: notification.location, description: notification.diagnosis } 
+    // El backend espera category, issueDescription, campus, classroom
+    const payload = {
+      category: 'Falla de Hardware',
+      issueDescription: `Reporte Automático desde Notificación: ${notification.diagnosis}\nAcción solicitada: ${notification.executedAction}`,
+      campus: notification.location, // En este caso location ya viene del sensor que puede ser la sede o el aula. El backend procesará.
+      classroom: '' 
+    };
+
+    this.ticketService.createTicket(payload).subscribe({
+      next: (res) => {
+        this.submittedTickets[notification.id] = 'sent';
+      },
+      error: (err) => {
+        console.error('Error creating ticket from alert:', err);
+        delete this.submittedTickets[notification.id];
+      }
     });
-    window.dispatchEvent(event);
   }
 }
