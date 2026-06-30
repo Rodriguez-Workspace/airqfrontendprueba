@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
+import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { SensorService } from '../../../../core/services/sensor';
 import { TicketService } from '../../../../core/services/ticket.service';
@@ -78,23 +79,34 @@ export class ClassroomsComponent implements OnInit, OnDestroy {
   }
 
   reportFault(sensor: SensorStatus): void {
-    if (confirm(`¿Estás seguro de reportar una falla para el sensor ${sensor.serialNumber} en el aula ${sensor.location}?`)) {
-      this.isReportingFault = true;
-      this.ticketService.createTicket({
-        category: 'HARDWARE_FAULT',
-        issueDescription: `Falla detectada en el sensor ${sensor.serialNumber} (Ubicación: ${sensor.location}, Sede: ${sensor.campus}). El sensor aparece como desconectado o presenta anomalías.`
-      }).subscribe({
-        next: () => {
-          this.isReportingFault = false;
-          this.toastService.showSuccess('Falla reportada exitosamente. Se ha creado un ticket de soporte.');
-        },
-        error: (err) => {
-          this.isReportingFault = false;
-          this.toastService.showError('Hubo un error al crear el ticket. Intente de nuevo.');
-          console.error(err);
-        }
-      });
-    }
+    Swal.fire({
+      title: '¿Reportar Falla?',
+      text: `¿Estás seguro de reportar una falla para el sensor ${sensor.serialNumber} en el aula ${sensor.location}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#207193',
+      cancelButtonColor: '#dc3545',
+      confirmButtonText: 'Sí, reportar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isReportingFault = true;
+        this.ticketService.createTicket({
+          category: 'HARDWARE_FAULT',
+          issueDescription: `Falla detectada en el sensor ${sensor.serialNumber} (Ubicación: ${sensor.location}, Sede: ${sensor.campus}). El sensor aparece como desconectado o presenta anomalías.`
+        }).subscribe({
+          next: () => {
+            this.isReportingFault = false;
+            this.toastService.showSuccess('Falla reportada exitosamente. Se ha creado un ticket de soporte.');
+          },
+          error: (err) => {
+            this.isReportingFault = false;
+            this.toastService.showError('Hubo un error al crear el ticket. Intente de nuevo.');
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
 

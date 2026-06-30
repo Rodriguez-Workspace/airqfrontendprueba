@@ -22,6 +22,8 @@ import {
   DatePipe
 } from '@angular/common';
 
+import Swal from 'sweetalert2';
+
 import {
   ChangeDetectorRef
 } from '@angular/core';
@@ -387,36 +389,26 @@ export class SensorListComponent
 
   }
 
-  deleteSensor(
-    id: number
-  ): void {
-
-    const confirmed =
-      confirm(
-        '¿Deseas eliminar este sensor?'
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.sensorService
-      .deleteSensor(id)
-      .subscribe({
-
-        next: () => {
-
-          delete this.measurementsMap[id];
-
-          this.loadSensors();
-
-        },
-
-        error:
-          console.error
-
-      });
-
+  deleteSensor(id: number): void {
+    Swal.fire({
+      title: '¿Eliminar sensor?',
+      text: '¿Deseas eliminar este sensor?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.sensorService.deleteSensor(id).subscribe({
+          next: () => {
+            this.loadSensors();
+          },
+          error: (err) => console.error('Error al eliminar sensor:', err)
+        });
+      }
+    });
   }
 
   getLatestMeasurement(

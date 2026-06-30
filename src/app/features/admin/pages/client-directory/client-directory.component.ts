@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -292,28 +293,39 @@ export class ClientDirectoryComponent implements OnInit {
   toggleStatus(client: AdminClientResponse): void {
     const isActivating = client.status !== 'ACTIVE';
     const action = isActivating ? 'reactivar' : 'suspender';
-
-    if (confirm(`¿Estás seguro de que deseas ${action} el acceso a ${client.institutionName}?`)) {
-      if (!isActivating) {
-        // Suspender: PUT /suspend sin body
-        this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/suspend`, {}).subscribe({
-          next: () => { client.status = 'SUSPENDED'; this.cdr.detectChanges(); },
-          error: () => this.toastService.showError(`Error al intentar suspender al cliente.`)
-        });
-      } else {
-        // Reactivar: PUT /activate requiere plan y sensores
-        const planKey = client.subscriptionPlan?.toUpperCase().includes('PRO') ? 'PRO' : 'BASIC';
-        const payload = {
-          plan: planKey,
-          organizationName: client.institutionName,
-          initialSensorsCount: client.hardwareSensorsCount
-        };
-        this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/activate`, payload).subscribe({
-          next: () => { client.status = 'ACTIVE'; this.cdr.detectChanges(); },
-          error: () => this.toastService.showError(`Error al intentar reactivar al cliente.`)
-        });
+    
+    Swal.fire({
+      title: `¿Confirmar acción?`,
+      text: `¿Estás seguro de que deseas ${action} el acceso a ${client.institutionName}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: isActivating ? '#198754' : '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: `Sí, ${action}`,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (!isActivating) {
+          // Suspender: PUT /suspend sin body
+          this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/suspend`, {}).subscribe({
+            next: () => { client.status = 'SUSPENDED'; this.cdr.detectChanges(); },
+            error: () => this.toastService.showError(`Error al intentar suspender al cliente.`)
+          });
+        } else {
+          // Reactivar: PUT /activate requiere plan y sensores
+          const planKey = client.subscriptionPlan?.toUpperCase().includes('PRO') ? 'PRO' : 'BASIC';
+          const payload = {
+            plan: planKey,
+            organizationName: client.institutionName,
+            initialSensorsCount: client.hardwareSensorsCount
+          };
+          this.http.put(`${environment.apiUrl}/admin/clients/${client.id}/activate`, payload).subscribe({
+            next: () => { client.status = 'ACTIVE'; this.cdr.detectChanges(); },
+            error: () => this.toastService.showError(`Error al intentar reactivar al cliente.`)
+          });
+        }
       }
-    }
+    });
   }
 
   // Acciones: Gestionar Plan
