@@ -11,8 +11,9 @@ import { ClientSettingsComponent } from '../../components/client-settings/client
 import { AlertCenterComponent } from '../../components/alert-center/alert-center.component';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions, Chart, registerables } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
-Chart.register(...registerables);
+Chart.register(...registerables, zoomPlugin);
 
 @Component({
   selector: 'app-dashboard',
@@ -46,28 +47,52 @@ export class DashboardComponent implements OnInit, OnDestroy {
     responsive: true,
     maintainAspectRatio: false,
     elements: { line: { tension: 0.4 } },
-    scales: { y: { suggestedMin: 400, suggestedMax: 1200 } }
+    scales: { y: { suggestedMin: 400, suggestedMax: 1200 } },
+    plugins: {
+      zoom: {
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+        pan: { enabled: true, mode: 'x' as const }
+      }
+    }
   };
 
   public pm25ChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     elements: { line: { tension: 0.4 } },
-    scales: { y: { suggestedMin: 0, suggestedMax: 100 } }
+    scales: { y: { suggestedMin: 0, suggestedMax: 100 } },
+    plugins: {
+      zoom: {
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+        pan: { enabled: true, mode: 'x' as const }
+      }
+    }
   };
 
   public tempChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     elements: { line: { tension: 0.4 } },
-    scales: { y: { suggestedMin: 10, suggestedMax: 40 } }
+    scales: { y: { suggestedMin: 10, suggestedMax: 40 } },
+    plugins: {
+      zoom: {
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+        pan: { enabled: true, mode: 'x' as const }
+      }
+    }
   };
 
   public humChartOptions: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
     elements: { line: { tension: 0.4 } },
-    scales: { y: { suggestedMin: 20, suggestedMax: 100 } }
+    scales: { y: { suggestedMin: 20, suggestedMax: 100 } },
+    plugins: {
+      zoom: {
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+        pan: { enabled: true, mode: 'x' as const }
+      }
+    }
   };
 
   public chartDataTemp: ChartConfiguration<'line'>['data'] = { labels: [], datasets: [] };
